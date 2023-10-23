@@ -1,7 +1,16 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from models import mainModels
 
 app = Flask(__name__)
+CORS(app)
+
+
+@app.route('/', methods=['GET'])
+def hello_world():
+    if request.method == 'GET':
+        data = {"message": "Hello world"}
+        return jsonify(data)
 
 
 @app.route('/get', methods=['GET'])
@@ -18,11 +27,16 @@ def create():
 
         if 'title' in data:
             title = data['title']
-            mainModels.create_task(title)
+
+            if 'status' in data:
+                status = data['status']
+            else:
+                status = 'pendente'
+
+            mainModels.create_task(title, status)
 
             return jsonify({'message': 'Tarefa criada com sucesso'}), 201
         else:
-
             return jsonify({'error': 'Campos obrigatórios ausentes'}), 400
 
     return jsonify({'error': 'Método não suportado'}), 405

@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Date
+from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
 
@@ -24,7 +24,7 @@ class Tarefas(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     title = Column(String(255), nullable=False, unique=True)
     status = Column(String, default='pending', nullable=False)
-    created_at = Column(Date, default=date)
+    created_at = Column(DateTime, default=datetime.now)
 
 
 Base.metadata.create_all(engine)
@@ -32,8 +32,8 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
-def create_task(title):
-    data = Tarefas(title=title)
+def create_task(title, status):
+    data = Tarefas(title=title, status=status)
     session.add(data)
     session.commit()
     session.close()
@@ -60,7 +60,7 @@ def get_task():
             "id": task.id,
             "title": task.title,
             "status": task.status,
-            "created_at": task.created_at.strftime("%Y-%m-%d")
+            "created_at": task.created_at.strftime("%d-%m-%Y %H:%M")
         }
         task_list.append(task_dict)
 
